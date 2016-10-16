@@ -1,0 +1,195 @@
+<head>
+  <title>Site Ace</title>
+</head>
+
+<body>
+
+
+	<!-- > website_form-->
+        
+	<!-- 	> website_list -->
+	
+</body>
+
+<template name="ApplicationLayout">
+    {{> yield "navbar"}}
+    {{> yield "search_result"}}
+    {{> yield "auto_suggest"}}
+    {{> yield "main"}}
+
+
+    {{> yield "comments"}}
+    {{> yield "comment"}}
+</template>
+
+<template name="welcome">
+	<h1>Welcome {{username}}!</h1>
+</template>
+
+
+
+<template name="navbar">
+	<!-- navbar  - you will be putting the login functions here -->
+	<nav class="navbar navbar-default navbar-fixed-top">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      <a class="navbar-brand" href="#">
+	        Site Ace
+	      </a>
+            {{> loginButtons}}
+          <div class="navbar-right searchbox-container">
+            <div class="searchbox">
+                {{> EasySearch.Input index=searchingindex}}
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+	  </div>
+	</nav>
+</template>
+
+
+<template name="search_result">
+
+
+  {{#EasySearch.IfInputEmpty index=searchingindex }}
+    <div class="padded examples"></div>
+  {{else}}
+    {{#if resultsCount}}
+      <div class="padded count-results">{{resultsCount}} results found.</div>
+    {{/if}}
+  {{/EasySearch.IfInputEmpty}}
+
+  {{#EasySearch.IfSearching index=searchingindex }}
+    <div>Searching...</div>
+  {{/EasySearch.IfSearching }}  
+
+  {{#EasySearch.IfNoResults index=searchingindex }}
+    <div class="padded no-results">No results found</div>
+  {{/EasySearch.IfNoResults }}
+</template>
+
+<template name="auto_suggest">
+your website recommendation 
+  <!-- searchIndex typeof EasySearch.Index -->
+  {{> EasySearch.Autosuggest index=searchingindex }}
+</template>
+
+
+<template name="website_form">
+    {{#if currentUser}}
+	<a class="btn btn-default js-toggle-website-form" href="#">
+  		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+	</a>
+	<div id="website_form" class="hidden_div">
+		<form class="js-save-website-form">
+		  <div class="form-group">
+		    <label for="url">Site address</label>
+		    <input type="text" class="form-control" id="url" placeholder="http://www.mysite.com" required>
+		  </div>
+		  <div class="form-group">
+		    <label for="title">Title</label>
+		    <input type="text" class="form-control" id="title" placeholder="Mysite" >
+		  </div>
+		    <div class="form-group">
+		    <label for="description">Description</label>
+		    <input type="text" class="form-control" id="description" placeholder="I found this site really useful for ..." required>
+		  </div>
+
+		  <button type="submit" class="btn btn-default">Submit</button>
+		</form>
+	</div>
+    {{/if}}
+</template>
+
+<!-- template that displays several website items -->
+<template name="website_list">
+	<div class="container">
+    {{> website_form}}
+    <ol>
+  	    {{#EasySearch.Each index=searchingindex}}
+  	    {{> website_item}}
+  	    {{/EasySearch.Each}}
+    </ol>
+	</div>
+</template>
+
+<!-- template that displays individual website entries -->
+<template name="website_item">
+<li>
+	<a href="{{url}}">{{title}}</a>
+	<p>
+        <a href=/{{_id}}>details</a>
+        <br />
+		{{description}}
+	</p>
+	<a href="#" class="btn btn-default js-upvote">
+		<span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+	</a>
+	<a href="#" class="btn btn-default js-downvote">
+		<span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+	</a>
+	<!-- you will be putting your up and down vote buttons in here! -->
+    <span> Votes {{votes}} </span>
+	<span> ~ Ups: {{upvotesCount}} </span>
+	<span> ~ Downs: {{downvotesCount}} </span>
+	<br />
+	<span>Creation Date {{createdOn}} </span>
+</li>
+</template>
+
+<!-- template that displays a website detail -->
+<template name="website_detail">
+
+    <h1><a href="{{url}}">{{title}}</a></h1>
+    <br />
+    <a href="/">back</a>
+    <p>
+        {{description}}
+    </p>
+    <a href="#" class="btn btn-default js-upvote">
+        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+    </a>
+    <a href="#" class="btn btn-default js-downvote">
+        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+    </a>
+    <span> Votes {{votes}} </span>
+	<span> ~ Ups: {{upvotesCount}} </span>
+	<span> ~ Downs: {{downvotesCount}} </span>
+	<br />
+	<span>Creation Date {{createdOn}} </span>
+</template>
+
+
+
+<!-- template that displays several comments -->
+<template name="comments_list">
+    <h3>Comments</h3>
+    <ol>
+        {{#each comments}}
+        {{>comment_item}}
+        {{/each}}
+    </ol>
+</template>
+
+<!-- template that displays individual comment entries -->
+<template name="comment_item">
+    <li>
+        {{comment}}
+        <p class="comment-meta">{{formattedDate}} by {{user}}</p>
+    </li>
+</template>
+
+<!-- template that displays the form to submit a new comment -->
+<template name="comment_form">
+    <div id="comment_form">
+        <form class="js-save-comment-form">
+          <div class="form-group">
+            <input type="text" class="form-control" id="comment" placeholder="Type your comment here...">
+          </div>
+
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+    </div>
+</template>
+
